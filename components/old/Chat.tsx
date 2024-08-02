@@ -21,7 +21,6 @@ export default function ClientComponent({
       }
     >
       <VoiceProvider
-        configId={process.env.NEXT_PUBLIC_HUME_CONFIG_ID}
         auth={{ type: "accessToken", value: accessToken }}
         onMessage={() => {
           if (timeout.current) {
