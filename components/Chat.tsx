@@ -4,7 +4,7 @@ import { VoiceProvider } from "@humeai/voice-react";
 import Messages from "./Messages";
 import Controls from "./Controls";
 import StartCall from "./StartCall";
-import { ComponentRef, useRef } from "react";
+import { ComponentRef, useRef, useState } from "react";
 
 export default function ClientComponent({
   accessToken,
@@ -13,7 +13,8 @@ export default function ClientComponent({
 }) {
   const timeout = useRef<number | null>(null);
   const ref = useRef<ComponentRef<typeof Messages> | null>(null);
-  
+  const [userName, setUserName] = useState("User");
+
   return (
     <div
       className={
@@ -23,6 +24,11 @@ export default function ClientComponent({
       <VoiceProvider
         configId={process.env.NEXT_PUBLIC_HUME_CONFIG_ID}
         auth={{ type: "accessToken", value: accessToken }}
+        sessionSettings={{
+          variables: {
+            name: userName,
+          },
+        }}
         onMessage={() => {
           if (timeout.current) {
             window.clearTimeout(timeout.current);
@@ -41,7 +47,7 @@ export default function ClientComponent({
         }}
       >
         <Messages ref={ref} />
-        <Controls />
+        <Controls setUserName={setUserName} />
         <StartCall />
       </VoiceProvider>
     </div>

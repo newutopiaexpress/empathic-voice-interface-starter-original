@@ -1,14 +1,28 @@
 "use client";
 import { useVoice } from "@humeai/voice-react";
-import {Button} from "./ui/Button/Button";
-import { Mic, MicOff, Phone } from "lucide-react";
+import { Button } from "./ui/Button/Button";
+import { Mic, MicOff, Phone, User } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Toggle } from "./ui/toggle";
 import MicFFT from "./MicFFT";
 import { cn } from "@/utils";
+import { useState } from "react";
 
-export default function Controls() {
-  const { disconnect, status, isMuted, unmute, mute, micFft } = useVoice();
+export default function Controls({ setUserName }: { setUserName: (name: string) => void }) {
+  const { disconnect, status, isMuted, unmute, mute, micFft, sendSessionSettings } = useVoice();
+  const [nameInput, setNameInput] = useState("");
+
+  const updateUserName = () => {
+    if (nameInput) {
+      setUserName(nameInput);
+      sendSessionSettings({
+        variables: {
+          name: nameInput,
+        },
+      });
+      setNameInput("");
+    }
+  };
 
   return (
     <div
@@ -58,6 +72,22 @@ export default function Controls() {
             <div className={"relative grid h-8 w-48 shrink grow-0"}>
               <MicFFT fft={micFft} className={"fill-current"} />
             </div>
+
+            <input
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Enter your name"
+              className="p-2 border rounded"
+            />
+
+            <Button
+              className={"flex items-center gap-1"}
+              onClick={updateUserName}
+            >
+              <User className={"size-4 opacity-50"} />
+              <span>Update Name</span>
+            </Button>
 
             <Button
               className={"flex items-center gap-1"}
